@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Thumbnail Grabber | Modern Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff0000;
+            --primary-dark: #cc0000;
+            --dark: #202020;
+            --light: #ffffff;
+            --gray: #f1f1f1;
+            --dark-gray: #606060;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tool-container {
+            background-color: var(--light);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .tool-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .input-group {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px 0 0 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .input-group button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .input-group button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .thumbnail-preview {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 8px;
+            margin: 0 auto;
+            display: block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .thumbnail-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .quality-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+
+        .quality-btn {
+            background-color: var(--gray);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .quality-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .quality-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0 auto;
+            transition: background-color 0.3s;
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .download-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .instructions {
+            background-color: var(--light);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .instructions h2 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .instructions ol {
+            padding-left: 1.5rem;
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            background-color: #fde8e8;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem 0;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .hidden-anchor {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tool-container {
+                padding: 1.5rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-group input {
+                border-radius: 8px;
+                margin-bottom: 0.5rem;
+            }
+            
+            .input-group button {
+                border-radius: 8px;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>YouTube Thumbnail Grabber</h1>
+            <p class="subtitle">Extract high-quality thumbnails from any YouTube video in multiple resolutions with just one click.</p>
+        </header>
+
+        <div class="tool-container">
+            <div class="input-group">
+                <input type="text" id="youtube-url" placeholder="Paste YouTube video URL here..." autocomplete="off">
+                <button id="extract-btn">Extract</button>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+
+            <div id="result-container" class="result-container">
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">Thumbnail Preview</h2>
+                <img id="thumbnail-preview" class="thumbnail-preview" src="" alt="YouTube Thumbnail">
+
+                <div class="quality-options">
+                    <button class="quality-btn active" data-quality="maxres">Max Resolution</button>
+                    <button class="quality-btn" data-quality="hq">High Quality</button>
+                    <button class="quality-btn" data-quality="mq">Medium Quality</button>
+                    <button class="quality-btn" data-quality="sd">Standard Quality</button>
+                </div>
+
+                <button id="download-btn" class="download-btn">
+                    <i class="fas fa-download"></i> Download Thumbnail
+                </button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>How to use this tool:</h2>
+            <ol>
+                <li>Copy the URL of any YouTube video from your browser's address bar</li>
+                <li>Paste the URL in the input field above</li>
+                <li>Click the "Extract" button</li>
+                <li>Choose your preferred thumbnail quality</li>
+                <li>Click "Download Thumbnail" to save the image</li>
+            </ol>
+        </div>
+
+        <footer>
+            <p>© 2023 YouTube Thumbnail Grabber Tool | Designed with ❤️ for content creators</p>
+        </footer>
+    </div>
+
+    <!-- Hidden anchor for downloads -->
+    <a id="hidden-download-anchor" class="hidden-anchor"></a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const youtubeUrlInput = document.getElementById('youtube-url');
+            const extractBtn = document.getElementById('extract-btn');
+            const resultContainer = document.getElementById('result-container');
+            const thumbnailPreview = document.getElementById('thumbnail-preview');
+            const downloadBtn = document.getElementById('download-btn');
+            const qualityBtns = document.querySelectorAll('.quality-btn');
+            const errorMessage = document.getElementById('error-message');
+            const hiddenDownloadAnchor = document.getElementById('hidden-download-anchor');
+
+            let currentVideoId = '';
+            let currentQuality = 'maxres';
+            let currentThumbnailUrl = '';
+
+            // Extract video ID from URL
+            function extractVideoId(url) {
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                const match = url.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : null;
+            }
+
+            // Generate thumbnail URL
+            function getThumbnailUrl(videoId, quality) {
+                const qualities = {
+                    'maxres': 'maxresdefault.jpg',
+                    'hq': 'hqdefault.jpg',
+                    'mq': 'mqdefault.jpg',
+                    'sd': 'sddefault.jpg'
+                };
+                
+                return `https://img.youtube.com/vi/${videoId}/${qualities[quality]}`;
+            }
+
+            // Show error message
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                resultContainer.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            // Force download of the thumbnail
+            function downloadThumbnail() {
+                if (!currentThumbnailUrl) return;
+                
+                // Create a filename
+                const filename = `youtube-thumbnail-${currentVideoId}-${currentQuality}.jpg`;
+                
+                // Use fetch to get the image as a blob
+                fetch(currentThumbnailUrl)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // Create object URL from the blob
+                        const url = URL.createObjectURL(blob);
+                        
+                        // Set up the hidden anchor tag
+                        hiddenDownloadAnchor.href = url;
+                        hiddenDownloadAnchor.download = filename;
+                        
+                        // Trigger the download
+                        hiddenDownloadAnchor.click();
+                        
+                        // Clean up by revoking the object URL
+                        setTimeout(() => {
+                            URL.revokeObjectURL(url);
+                        }, 100);
+                    })
+                    .catch(error => {
+                        console.error('Download error:', error);
+                        showError('Failed to download thumbnail. Please try again.');
+                    });
+            }
+
+            // Handle extract button click
+            extractBtn.addEventListener('click', function() {
+                const url = youtubeUrlInput.value.trim();
+                
+                if (!url) {
+                    showError('Please enter a YouTube video URL');
+                    return;
+                }
+                
+                const videoId = extractVideoId(url);
+                
+                if (!videoId) {
+                    showError('Invalid YouTube URL. Please check and try again.');
+                    return;
+                }
+                
+                currentVideoId = videoId;
+                updateThumbnail();
+                resultContainer.style.display = 'block';
+            });
+
+            // Handle quality button clicks
+            qualityBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    qualityBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentQuality = this.dataset.quality;
+                    updateThumbnail();
+                });
+            });
+
+            // Update thumbnail based on current quality
+            function updateThumbnail() {
+                if (!currentVideoId) return;
+                
+                const thumbnailUrl = getThumbnailUrl(currentVideoId, currentQuality);
+                currentThumbnailUrl = thumbnailUrl;
+                
+                // Check if image exists (YouTube might not have maxres for some videos)
+                const img = new Image();
+                img.onload = function() {
+                    if (this.width > 120) { // YouTube returns a 120x90 image when not available
+                        thumbnailPreview.src = thumbnailUrl;
+                    } else {
+                        // Fallback to HQ if maxres not available
+                        if (currentQuality === 'maxres') {
+                            currentQuality = 'hq';
+                            document.querySelector('.quality-btn[data-quality="hq"]').click();
+                        } else {
+                            showError('Thumbnail not available in this quality. Try another option.');
+                        }
+                    }
+                };
+                img.onerror = function() {
+                    // Fallback to HQ if maxres not available
+                    if (currentQuality === 'maxres') {
+                        currentQuality = 'hq';
+                        document.querySelector('.quality-btn[data-quality="hq"]').click();
+                    } else {
+                        showError('Thumbnail not available in this quality. Try another option.');
+                    }
+                };
+                img.src = thumbnailUrl;
+            }
+
+            // Handle download button click
+            downloadBtn.addEventListener('click', downloadThumbnail);
+
+            // Allow clicking on thumbnail to download
+            thumbnailPreview.addEventListener('click', downloadThumbnail);
+
+            // Allow pressing Enter in input field
+            youtubeUrlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    extractBtn.click();
+                }
+            });
+
+            // Paste event listener for better UX
+            youtubeUrlInput.addEventListener('paste', function(e) {
+                setTimeout(() => {
+                    extractBtn.click();
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

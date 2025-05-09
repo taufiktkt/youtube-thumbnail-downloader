@@ -65,3 +65,5 @@ HQ: https://img.youtube.com/vi/[VIDEO_ID]/hqdefault.jpg
 Max Res: https://img.youtube.com/vi/[VIDEO_ID]/maxresdefault.jpg
 
 This tool simply makes the process foolproof and user-friendly!
+
+check this tool here: https://onetoolsai.com/youtube-thumbnail-downloader/
